@@ -71,23 +71,36 @@
         <h2>Add a record</h2>
         <form id="finance-form">
             <label for="description">Description:</label>
-            <input type="text"  id="description" name="description" placeholder="e.g. Bought Lunch on Campus" required/>
+            <input type="text"  id="description" name="description" placeholder="e.g. Bought Lunch on Campus" required aria-describedby="desc-err"/>
+            <small id="desc-err" class="error" aria-live="polite"></small>
 
             <label for="amount">Amount:</label>
-            <input type="number"  id="amount" name="amount" placeholder="e.g. 3000RWF" required/>
+            <input type="number"  id="amount" name="amount" placeholder="e.g. 3000RWF" required aria-describedby="amt-err"/>
+            <small id="amt-err" class="error" aria-live="polite"></small>
 
             <label for="type">Type</label>
-            <select id="type" name="type" required>
+            <select id="type" name="type" required aria-describedby="type-err">
                 <option value="">--Select the Type of Transaction--</option>
                 <option value="income">Income</option>
                 <option value="expense">Expense</option>
             </select>
+            <small id="type-err" class="error" aria-live="polite"></small>
 
             <label for="date">Date:</label>
-            <input type="date" id="date" name="date" required />
+            <input type="date" id="date" name="date" required aria-describedby="date-err" />
+            <small id="date-err" class="error" aria-live="polite"></small>
 
             <button type="submit" >Add record</button>
         </form>
+
+        <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+            <button id="btn-export">Export JSON</button>
+            <label style="display:inline-flex; align-items:center; gap:8px;">
+                <input type="file" id="file-import" accept="application/json">
+                <span>Import JSON</span>
+            </label>
+            <small id="import-err" class="error" aria-live="assertive"></small>
+        </div>
     </section>
 
     <!-- Table Section -->
@@ -107,6 +120,40 @@
             <!-- Records will appear here -->
             </tbody>
         </table>
+    </section>
+
+    <!-- Settings Section -->
+    <section id="settings-section">
+        <h2>Settings</h2>
+
+        <div>
+            <h3>Budget Cap</h3>
+            <label for="cap-amount">Monthly Limit (RWF):</label>
+            <input id="cap-amount" type="number" placeholder="e.g. 150000">
+            <button id="save-cap">Save</button>
+            <p id="cap-status" role="status" aria-live="polite" class="sr-only"></p>
+        </div>
+
+        <hr style="margin: 20px 0;">
+
+        <div>
+            <h3>Currency Settings</h3>
+            <label for="rate-usd">USD rate:</label>
+            <input id="rate-usd" type="number" placeholder="e.g. 0.0005">
+
+            <label for="rate-eur">EUR rate:</label>
+            <input id="rate-eur" type="number" placeholder="e.g. 0.00031">
+
+            <label for="display-currency">Display totals in:</label>
+            <select id="display-currency">
+                <option value="RWF" selected>RWF</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+            </select>
+
+            <button id="save-rates">Save</button>
+            <small id="rates-err" class="error" aria-live="polite"></small>
+        </div>
     </section>
 
 </main>

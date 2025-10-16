@@ -114,23 +114,17 @@ h2 {
 
 #about-section {
     background-color: var(--primary-color);
-    color:#fff;
+    color: #fff;
     padding: 60px 20px;
-    border-radius:0;
-    text-align:center;
-    box-shadow:none;
-    position: relative;
-    left: 50%;
-    right: 50%;
-    margin-left: -50vw;
-    margin-right: -50vw;
-    width: 100vw;
+    border-radius: 0;
+    box-shadow: none;
+    text-align: center;
 }
 
 .about-content {
-    max-width: 1100px;
+    max-width: 900px;
     margin: 0 auto;
-    line-height:1.8;
+    line-height: 1.8;
 }
 
 #about-section h2 {
@@ -216,12 +210,18 @@ footer {
     border-top: 1px solid #ddd;
 }
 
+.error {
+    color: #b00020;
+    font-size: 0.9rem;
+    min-height: 1.1em;
+}
+
 @media (min-width: 768px) {
     main {
         grid-template-columns: 1fr 1fr;
     }
-
+    #about-section,
     #dashboard-section {
-        grid-column: 1 / span 2;
+        grid-column: 1 / -1;
     }
 }
