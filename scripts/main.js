@@ -8,11 +8,23 @@ import { fmtAmount, updateDashboard } from "./ui.js";
 // Wait for the page to load
 document.addEventListener("DOMContentLoaded", () => {
 
+    function announce(msg) {
+        const s = document.getElementById("status");
+        if (s) s.textContent = msg
+    }
+
     const form = document.getElementById("finance-form");
     const recordList = document.getElementById("record-list");
 
 
-    let records = loadRecords();
+    let records = [];
+
+    loadRecords().then(data => {
+        records = data;
+        renderRecords()
+        updateDashboard(records, settings);
+    });
+
     let settings = loadSettings();
     let sortKey = "date";
     let sortDir = "desc";
@@ -39,6 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
         saveSettings(settings)
         updateDashboard(records, settings);
         alert("Budget cap saved!");
+        announce("Budget cap saved.");
     });
 
     saveRatesBtn.addEventListener("click", () => {
@@ -54,7 +67,8 @@ document.addEventListener("DOMContentLoaded", () => {
         saveSettings(settings);
         ratesErr.textContent = "";
         updateDashboard(records, settings);
-        alert("Currency settings saved!");
+        alert("Currency settings saved!")
+        announce("Currency settings saved.");
     });
 
     // Tolbar
@@ -76,7 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <input type="checkbox" id="sft-ci" checked />
         <span>Case-insensitive</span>
       </label>
-      <span id="sft-search-error" style="color:#b00020;min-height:1.2em;"></span>
+      <span id="sft-search-error" class="error" aria-live="assertive" style="color:#b00020;min-height:1.2em;"></span>
     `;
 
         const h2 = section.querySelector("h2");
@@ -161,8 +175,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (removeIndex > -1) {
                     records.splice(removeIndex, 1);
                     saveRecords(records);
-                    renderRecords();
+                    renderRecords()
                     updateDashboard(records, settings);
+                    announce("Record deleted..");
                 }
             });
         });
@@ -229,6 +244,7 @@ document.addEventListener("DOMContentLoaded", () => {
         form.reset();
         renderRecords();
         updateDashboard(records, settings);
+        announce("REcord added.")
     });
 
     // json
@@ -246,6 +262,7 @@ document.addEventListener("DOMContentLoaded", () => {
             a.download = "student_finance_records.json";
             a.click()
             URL.revokeObjectURL(url);
+            announce("Records exported")
         });
     }
 
@@ -287,6 +304,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     saveRecords(records);
                     renderRecords()
                     updateDashboard(records, settings);
+                    announce("Record imported successfully");
                     importErr.textContent = "";
                     alert("Records imported successfully!");
                 } catch {

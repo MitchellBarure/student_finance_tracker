@@ -2,10 +2,20 @@
 export const STORAGE_KEY = "sft:records";
 export const SETTINGS_KEY = "sft:settings";
 
+
 export function loadRecords() {
     try {
         const saved = localStorage.getItem(STORAGE_KEY);
-        return saved ? JSON.parse(saved) : [];
+        if (saved) return JSON.parse(saved);
+
+        // Use seed.json when no data is submtted
+        return fetch("./scripts/seed.json")
+            .then(response => response.json())
+            .then(seedData => {
+                saveRecords(seedData);
+                return seedData;
+            })
+            .catch(() => []);
     } catch {
         return [];
     }
