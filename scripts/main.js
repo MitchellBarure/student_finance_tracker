@@ -1,5 +1,6 @@
 // Wait for the page to load
 document.addEventListener("DOMContentLoaded", () => {
+
     const form = document.getElementById("finance-form");
     const recordList = document.getElementById("record-list");
 
@@ -82,5 +83,8 @@ document.addEventListener("DOMContentLoaded", () => {
         renderRecords();
         updateDashboard();
     });
+
+    const yearEl = document.getElementById("year");
+    if (yearEl) yearEl.textContent = new Date().getFullYear();
 });
 

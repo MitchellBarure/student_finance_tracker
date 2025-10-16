@@ -23,8 +23,40 @@ body {
     padding: 20px;
 }
 
-/*2. Header and Layout */
+.skip-link {
+    position: absolute;
+    left: -9999px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+.skip-link:focus {
+    position: static;
+    width: auto;
+    height: auto;
+    background: var(--primary-color);
+    color: #fff;
+    padding: .5rem .75rem;
+    border-radius: 8px;
+}
 
+:focus-visible {
+    outline: 2px solid #0b84ff;
+    outline-offset: 2px;
+}
+
+
+.sr-only {
+    position: absolute !important;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+    white-space: nowrap;
+}
+
+/*2. Header and Layout */
 header {
     text-align: center;
     margin-bottom: 30px;
@@ -37,6 +69,28 @@ header h1 {
 
 header p {
     color: var(--text-dark);
+}
+
+.nav {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 1.2rem;
+    margin-top: 10px;
+    padding: 0;
+}
+
+.nav a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.nav a:hover,
+.nav a:focus {
+    color: var(--secondary-color);
+    transform: translateY(-2px);
 }
 
 main {
@@ -56,6 +110,46 @@ h2 {
     color: var(--primary-color);
     font-weight: 600;
     margin-bottom: 15px;
+}
+
+#about-section {
+    background-color: var(--primary-color);
+    color:#fff;
+    padding: 60px 20px;
+    border-radius:0;
+    text-align:center;
+    box-shadow:none;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    width: 100vw;
+}
+
+.about-content {
+    max-width: 1100px;
+    margin: 0 auto;
+    line-height:1.8;
+}
+
+#about-section h2 {
+    font-size: 1.9rem;
+    margin-bottom: 12px;
+}
+
+#about-section p {
+    max-width:70ch;
+    margin:.5rem auto;
+}
+
+#about-section a {
+    color: var(--text-light);
+    font-weight: bold;
+}
+
+#about-section a:hover {
+    text-decoration:underline;
 }
 
 /* Form Styling */
@@ -114,9 +208,12 @@ th, td {
 
 footer {
     text-align: center;
-    margin-top: 30px;
-    font-size: 0.9em;
-    color: var(--text-light);
+    margin-top: 40px;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    background-color: var(--bg-light);
+    padding: 15px;
+    border-top: 1px solid #ddd;
 }
 
 @media (min-width: 768px) {
