@@ -1,25 +1,34 @@
 // search.js
-export function compileRegex(input, flags) {
-    try {
-        if (!input) return null;
-        const f = (flags || "") + (flags?.includes("g") ? "" : "g");
-        return new RegExp(input, f);
-    } catch {
-        return null;
+import {compileRegex} from "./validators.js";
+
+//Apply the regex pattern rules and searches for matches
+export function buildSearchRegex(query, caseInsensitive =true) {
+    const q = String(query || "").trim();
+    if (!q) return null;
+    const flags = caseInsensitive ? "ig" : "g";
+    return compileRegex(q, flags);
+}
+
+//Keep all the financial records that are a match
+export function searchRecords(records, query, caseInsensitive = true) {
+    const re =buildSearchRegex(query, caseInsensitive);
+    if (query && !re) {
+        return {
+            filtered: records,
+            highlightRe: null,
+            error: "The regex pattern is invalid!"
+        };
     }
+    if (!re) {
+        return {filtered: records, highlightRe: null, error: null};
+    }
+
+    const filtered = records.filter(r => {
+        const desc = String(r.description || "");
+        const cat = String(r.category || "");
+        return re.test(desc) || re.test(cat);
+    });
+
+    return { filtered, highlightRe: re, error: null };
 }
 
-export function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, c => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#039;"
-    })[c]);
-}
-
-export function highlight(text, re) {
-    if (!re) return escapeHtml(text);
-    return escapeHtml(text).replace(re, m => `<mark>${m}</mark>`);
-}

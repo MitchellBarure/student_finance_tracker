@@ -9,36 +9,37 @@
 </head>
 
 <body>
-<a class="skip-link" href="#main">Skip to main content</a>
 
+ <!--Header (Project name, slogan, and navigation)-->
 <header role="banner">
+    <a class="skip-link" href="#main">Skip to the main content</a>  <!-- Skip link allows you to move to the main content on the webage-->
     <h1>Student Finance Tracker</h1>
-    <p>Navigate Finances with Confidence</p>
+    <p>Navigate Your Finances with Confidence 😉</p>
 
-<nav aria-label="Page navigation ">
+ <nav aria-label="Web page navigation ">
     <ul class="nav">
         <li><a href="#about-section">About</a></li>
         <li><a href="#dashboard-section">Dashboard</a></li>
         <li><a href="#records-section">Records</a></li>
-        <li><a href="#form-section">Add/Edit</a></li>
+        <li><a href="#form-section">Add a record</a></li>
         <li><a href="#settings-section">Settings</a></li>
     </ul>
 
 </nav>
 </header>
 
-<main id="main">
+<main id="main" tabindex="-1">
 
-    <!--About Section-->
+    <!--Finance Tracker: About Section-->
     <section id="about-section">
         <div class="about-content">
         <h2 id="about-h">About</h2>
         <p>
-            The Student Finance Tracker assists students in managing their finances which will allow them to experience financial freedom.
+            Purpose: This Student Finance Tracker helps you manage your finances, allowing you to experience Financial Freedom.
         </p>
 
         <p>
-        Designed by Mitchell Barure - Software engineering student at The African Leadership University. <br>
+        Designed by: Mitchell Barure, a software engineer student at ALU☺ <br>
         Contact details: <a href="mailto:m.barure@alustudent.com">m.barure@alustudent.com</a> <br>
         Github:<a href="https://github.com/MitchellBarure">https://github.com/MitchellBarure</a>
 
@@ -46,45 +47,65 @@
         </div>
     </section>
 
-    <!-- Dashboard Section -->
+    <!-- Dashboard Section, shows a summary of income, expenses and your balanace -->
     <section id="dashboard-section">
-        <h2>Summary Dashboard</h2>
-        <div id="dashboard">
-            <div class="card">
+        <h2>Finance Summary Dashboard</h2>
+        <div id="dashboard" class="cards">
+            <div class="card kpi">
                 <h3>Total Income</h3>
                 <p id="total-income">0</p>
             </div>
-            <div class="card">
+            <div class="card kpi">
                 <h3>Total Expenses</h3>
                 <p id="total-expense">0</p>
             </div>
-            <div class="card">
+            <div class="card kpi">
                 <h3>Balance</h3>
                 <p id="balance">0</p>
             </div>
         </div>
-        <div id="stats" style="margin-top:1rem;">
-            <h3>Insights</h3>
-            <p id="stat-top-expense">Top Expense: —</p>
-            <p id="stat-avg-expense">Average Expense: —</p>
-            <p id="stat-cap-status">Cap Status: —</p>
-        </div>
+        </section>
+
+    <section id="statistics-section" aria-labelledby="statistics-h">
+    <!-- Statistics of Finances, little analysis on financial records -->
+    <div>
+        <h3 id="statistics-h">Statistics</h3>
+        <ul>
+            <li><strong>Top Category:</strong> <span id="stat-top-category"></span></li>
+            <li><strong>Average Expenses:</strong> <span id="stat-ave-expense"></span></li>
+            <li><strong>Cap Status:</strong> <span id="stat-cap-status" role="status" aria-live="polite"></span></li>
+        </ul>
+    </div>
     </section>
 
-    <!-- Input Section -->
+
+    <!-- Section to add financial records -->
     <section id="form-section">
         <p id="status" role="status" aria-live="polite" class="sr-only"></p>
         <h2>Add a record</h2>
         <form id="finance-form">
             <label for="description">Description:</label>
-            <input type="text"  id="description" name="description" placeholder="e.g. Bought Lunch on Campus" required aria-describedby="desc-err"/>
+            <input type="text"  id="description" name="description" placeholder="e.g.Transport to school" required aria-describedby="desc-err"/>
             <small id="desc-err" class="error" aria-live="polite"></small>
+
+            <label for="category">Category</label>
+            <input list="categories" id="category" name="category" placeholder="e.g. Food, Toiletries, Other" required aria-describedby="cat-err">
+                <datalist id="categories"> <!-- Datalist allows user to pick categories provided or enter their own" -->
+                    <option value="Food">
+                    <option value="Toiletries">
+                    <option value="Books">
+                    <option value="Transport">
+                    <option value="Entertainment">
+                    <option value="Fees">
+                    <option value="Other">
+                </datalist>
+            <small id="cat-err" class="error" aria-live="polite"></small>
 
             <label for="amount">Amount:</label>
             <input type="number"  id="amount" name="amount" placeholder="e.g. 3000RWF" required aria-describedby="amt-err"/>
             <small id="amt-err" class="error" aria-live="polite"></small>
 
-            <label for="type">Type</label>
+            <label for="type">Type</label>           <!--Allows logic needed for dashboard, summary of finances-->
             <select id="type" name="type" required aria-describedby="type-err">
                 <option value="">--Select the Type of Transaction--</option>
                 <option value="income">Income</option>
@@ -96,7 +117,7 @@
             <input type="date" id="date" name="date" required aria-describedby="date-err" />
             <small id="date-err" class="error" aria-live="polite"></small>
 
-            <button type="submit" >Add record</button>
+            <button type="submit" >Add a record</button>
         </form>
 
         <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
@@ -109,9 +130,23 @@
         </div>
     </section>
 
-    <!-- Table Section -->
+    <!-- Records Table Section -->
     <section id="records-section">
         <h2>Records</h2>
+
+        <!-- Allow users to do regex search in finance record table -->
+        <div id="search-bar">
+            <label for="search-input"><strong>Search Records using Regex:</strong></label>
+            <input type="text" id="search-input"
+                   placeholder="e.g. \\d{4}-\\d{2}-\\d{2}" >
+            <label style="display:inline-flex; gap:.4rem; align-items:center;">
+                <input type="checkbox" id="search-case" checked>
+                Case-insensitive
+            </label>
+            <small id="search-err" class="error" aria-live="polite"></small>
+        </div>
+
+        <!-- Table of financial records -->
         <table>
             <caption class="sr-only">Arrange columns and delete your financial records!</caption>
             <thead>
@@ -124,12 +159,12 @@
             </tr>
             </thead>
             <tbody id="record-list">
-            <!-- Records will appear here -->
+            <!-- The financial records will appear in this table -->
             </tbody>
         </table>
     </section>
 
-    <!-- Settings Section -->
+    <!-- The Settings Section -->
     <section id="settings-section">
         <h2>Settings</h2>
 
@@ -165,7 +200,7 @@
 
 </main>
 
-<footer role="contentinfo">
+<footer >
     <p>&copy; <span id="year"></span> Student Finance Tracker</p>
 </footer>
 

@@ -1,4 +1,4 @@
-/*Set all colors */
+/*Set all colors for the color scheme */
 :root {
     --primary-color: #6a0dad;
     --secondary-color: #a020f0;
@@ -23,6 +23,7 @@ body {
     padding: 20px;
 }
 
+/* Styling for skip link */
 .skip-link {
     position: absolute;
     left: -9999px;
@@ -56,7 +57,7 @@ body {
     white-space: nowrap;
 }
 
-/*2. Header and Layout */
+/*2. Style all contente in header tag */
 header {
     text-align: center;
     margin-bottom: 30px;
@@ -93,6 +94,8 @@ header p {
     transform: translateY(-2px);
 }
 
+
+/* Styling for main content */
 main {
     display: grid;
     grid-template-columns: 1fr;
@@ -146,7 +149,10 @@ h2 {
     text-decoration:underline;
 }
 
-/* Form Styling */
+.dash-grid { display: grid; gap: 20px; }
+
+
+/* Styling for Add Records Form */
 form {
     display: grid;
     flex-direction: column;
@@ -183,6 +189,7 @@ th, td {
     border-bottom: 1px solid var(--bg-light);
 }
 
+/* Style the dashboard */
 #dashboard {
     display: flex;
     gap: 20px;
@@ -191,8 +198,6 @@ th, td {
 }
 
 .card {
-    flex: 1;
-    min-width: 150px;
     background: var(--secondary-color);
     color: var(--bg-light);
     text-align: center;
@@ -200,6 +205,42 @@ th, td {
     border-radius: 10px;
 }
 
+.kpi {
+    flex: 1;
+    min-width: 150px;
+}
+
+.kpi h3 {
+    margin-bottom: .25rem;
+}
+
+.kpi p{
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1;
+
+}
+
+/* Style the Stats */
+#statistics-section ul {
+    list-style: none;
+    padding-left: 0;
+    display: grid;
+    gap: 12px;
+}
+
+#statistics-section li {
+    display:grid;
+    grid-template-columns: 180px 1fr;
+    align-items: center;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-light);
+    background: var(--bg-light);
+    padding: 12px 14px;
+}
+
+
+/*sIMPLE FOOTER STYLING */
 footer {
     text-align: center;
     margin-top: 40px;
@@ -210,18 +251,31 @@ footer {
     border-top: 1px solid #ddd;
 }
 
+/*sTYLING FOR ERROR MSGS */
 .error {
     color: #b00020;
     font-size: 0.9rem;
     min-height: 1.1em;
 }
 
+/* mAKE THE PAGE RESPONSIVE */
 @media (min-width: 768px) {
     main {
         grid-template-columns: 1fr 1fr;
     }
-    #about-section,
-    #dashboard-section {
+    #about-section,                        /* This allows the included sectiosn to span across the width of the screen */
+    #dashboard-section,
+    #statistics-section,
+    #settings-section {
         grid-column: 1 / -1;
     }
 }
+
+/* Additional media querie */
+@media (min-width: 1024px) {
+    .dash-grid {
+        grid-template-columns: 2fr 1fr;
+        align-items: start;
+    }
+}
+

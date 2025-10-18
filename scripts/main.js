@@ -1,9 +1,8 @@
 // main.js
-import { loadRecords, saveRecords, loadSettings, saveSettings } from "./storage.js";
+import { loadRecords, saveRecords, loadSettings, saveSettings, exportRecords, importFromJSON } from "./storage.js";
 import { validators } from "./validators.js";
-import { compileRegex, highlight, escapeHtml } from "./search.js";
-import { fmtAmount, updateDashboard } from "./ui.js";
-
+import { searchRecords } from "./search.js";
+import { renderAll } from "./ui.js";
 
 // Wait for the page to load
 document.addEventListener("DOMContentLoaded", () => {
@@ -16,20 +15,48 @@ document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("finance-form");
     const recordList = document.getElementById("record-list");
 
-
+    let editingId = null;
+    let settings = loadSettings();
     let records = [];
+
+    if (recordList) {
+        recordList.addEventListener("click", (e) => {
+            const btn = e.target.closest("button");
+            if (!btn || !btn.dataset.id) return;
+            const id = btn.dataset.id;
+
+            if (btn.classList.contains("btn-delete")) {
+                // DELETE (no confirm, super simple)
+                records = records.filter(r => r.id !== id);
+                saveRecords(records);
+                applySearch(); // or renderAll(records, settings);
+            }
+
+            if (btn.classList.contains("btn-edit")) {
+                // EDIT: prefill form and mark editing
+                const rec = records.find(r => r.id === id);
+                if (!rec) return;
+                document.getElementById("description").value = rec.description ?? "";
+                document.getElementById("category").value    = rec.category ?? "";
+                document.getElementById("amount").value      = String(rec.amount ?? "");
+                document.getElementById("type").value        = rec.type ?? "";
+                document.getElementById("date").value        = rec.date ?? "";
+                editingId = id;
+            }
+        });
+    }
 
     loadRecords().then(data => {
         records = data;
-        renderRecords()
-        updateDashboard(records, settings);
+        renderAll(records, settings);
     });
 
-    let settings = loadSettings();
+
     let sortKey = "date";
     let sortDir = "desc";
     let searchInputValue = "";
     let searchFlagsCI = true;
+
 
     //SETTINGS
     const capInput = document.getElementById("cap-amount");
@@ -49,7 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
     saveCapBtn.addEventListener("click", () => {
         settings.cap = parseFloat(capInput.value) || 0;
         saveSettings(settings)
-        updateDashboard(records, settings);
+        renderAll(records, settings);
         alert("Budget cap saved!");
         announce("Budget cap saved.");
     });
@@ -66,184 +93,93 @@ document.addEventListener("DOMContentLoaded", () => {
         settings.display = display;
         saveSettings(settings);
         ratesErr.textContent = "";
-        updateDashboard(records, settings);
+        renderAll(records, settings);
         alert("Currency settings saved!")
         announce("Currency settings saved.");
     });
 
-    // Tolbar
-    (function injectSearchToolbar() {
-        const section = document.getElementById("records-section");
-        if (!section) return;
-        const toolbar = document.createElement("div");
-        toolbar.style.display = "flex";
-        toolbar.style.gap = "12px";
-        toolbar.style.flexWrap = "wrap";
-        toolbar.style.alignItems = "center";
-        toolbar.style.margin = "6px 0 10px";
+    const searchInput = document.getElementById("search-input");
+    const searchCase = document.getElementById("search-case");
+    const searchErrEl = document.getElementById("search-err");
 
-        toolbar.innerHTML = `
-      <label for="sft-search" style="font-weight:600;">Regex search:</label>
-      <input id="sft-search" placeholder="e.g. (coffee|tea)|\\b(\\w+)\\s+\\1\\b"
-             style="padding:.4rem .6rem;border:1px solid #e6e6e6;border-radius:8px;min-width:220px;" />
-      <label style="display:flex;align-items:center;gap:6px;">
-        <input type="checkbox" id="sft-ci" checked />
-        <span>Case-insensitive</span>
-      </label>
-      <span id="sft-search-error" class="error" aria-live="assertive" style="color:#b00020;min-height:1.2em;"></span>
-    `;
-
-        const h2 = section.querySelector("h2");
-        if (h2 && h2.nextSibling) section.insertBefore(toolbar, h2.nextSibling);
-        else section.prepend(toolbar);
-
-        const input = document.getElementById("sft-search");
-        const ci = document.getElementById("sft-ci");
-        input.addEventListener("input", () => {
-            searchInputValue = input.value;
-            renderRecords();
-            updateDashboard(records, settings);
-        });
-        ci.addEventListener("change", () => {
-            searchFlagsCI = ci.checked;
-            renderRecords();
-            updateDashboard(records, settings);
-        });
-    })();
-
-    function getFilteredRecords() {
-        const flags = (searchFlagsCI ? "i" : "");
-        const re = compileRegex(searchInputValue.trim(), flags);
-        const arr = re
-            ? records.filter(r =>
-                re.test(r.description) ||
-                re.test(r.type) ||
-                re.test(String(r.amount)) ||
-                re.test(r.date)
-            )
-            : records.slice();
-
-        const mul = sortDir === "asc" ? 1 : -1;
-        arr.sort((a, b) => {
-            if (sortKey === "amount") return (a.amount - b.amount) * mul;
-            if (sortKey === "description" || sortKey === "type")
-                return a[sortKey].localeCompare(b[sortKey]) * mul;
-            return a.date.localeCompare(b.date) * mul;
-        });
-        return arr;
+    function applySearch() {
+        const { filtered, highlightRe, error } = searchRecords(records, searchInput?.value || "", !!searchCase?.checked);
+        if (searchErrEl) searchErrEl.textContent = error || "";
+        renderAll(filtered, settings, highlightRe);
     }
 
-    function renderRecords() {
-        const searchErr = document.getElementById("sft-search-error");
-        const flags = (searchFlagsCI ? "i" : "");
-        const re = compileRegex(searchInputValue.trim(), flags);
-        if (searchErr) searchErr.textContent = (searchInputValue && !re) ? "Invalid regex pattern" : "";
-
-        const rows = getFilteredRecords();
-        recordList.innerHTML = "";
-
-        rows.forEach((record, index) => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-        <td>${re ? highlight(record.description, re) : escapeHtml(record.description)}</td>
-        <td>${fmtAmount(record.amount)}</td>
-        <td>${re ? highlight(record.type.charAt(0).toUpperCase() + record.type.slice(1), re)
-                : record.type.charAt(0).toUpperCase() + record.type.slice(1)}</td>
-        <td>${re ? highlight(record.date, re) : escapeHtml(record.date)}</td>
-        <td>
-          <button class="delete-btn" data-index="${index}">Delete</button>
-        </td>
-      `;
-            recordList.appendChild(tr);
-        });
-
-        wireSortHeaders()
-
-        document.querySelectorAll(".delete-btn").forEach(button => {
-            button.addEventListener("click", (e) => {
-                const idx = Number(e.currentTarget.getAttribute("data-index"));
-                const current = getFilteredRecords();
-                const rec = current[idx];
-                if (!rec) return;
-                const removeIndex = records.findIndex(r =>
-                    r.id === rec.id ||
-                    (r.description === rec.description &&
-                        r.amount === rec.amount &&
-                        r.type === rec.type &&
-                        r.date === rec.date)
-                );
-                if (removeIndex > -1) {
-                    records.splice(removeIndex, 1);
-                    saveRecords(records);
-                    renderRecords()
-                    updateDashboard(records, settings);
-                    announce("Record deleted..");
-                }
-            });
-        });
-    }
-
-    function wireSortHeaders() {
-        const thead = recordList.closest("table")?.querySelector("thead");
-        if (!thead) return;
-        const map = { 0: "description", 1: "amount", 2: "type", 3: "date" };
-        [...thead.querySelectorAll("th")].forEach((th, i) => {
-            if (!(i in map)) return;
-            th.style.cursor = "pointer";
-            th.title = "Click to sort";
-            th.onclick = () => {
-                const key = map[i];
-                if (sortKey === key) sortDir = sortDir === "asc" ? "desc" : "asc";
-                else {
-                    sortKey = key;
-                    sortDir = key === "date" ? "desc" : "asc";
-                }
-                renderRecords();
-                updateDashboard(records, settings);
-            };
-        });
-    }
+    if (searchInput) searchInput.addEventListener("input", applySearch);
+    if (searchCase)  searchCase.addEventListener("change", applySearch);
 
     form.addEventListener("submit", (e) => {
         e.preventDefault();
         const descriptionRaw = document.getElementById("description").value;
+        const category = document.getElementById("category").value;
         const amountStr = document.getElementById("amount").value;
         const type = document.getElementById("type").value;
         const date = document.getElementById("date").value;
 
-        const { reDescNoEdge, reAmount, reDate, reDupWord } = validators;
+        const { reDescripNoEdge, reAmount, reDate, reDupWord, reCategory } = validators;
 
-        if (!reDescNoEdge.test(descriptionRaw)) {
-            alert("Description cannot start or end with spaces.");
+        if (!reDescripNoEdge.test(descriptionRaw)) {
+            alert("The description must not start or end with spaces.");
             return;
         }
+
+        if (!reCategory.test(String(category || "").trim())) {
+            alert("The category must contain letters or spaces or hyphens ONLY.");
+            return;
+        }
+
         if (!reAmount.test(amountStr)) {
-            alert("Amount must be a number (up to 2 decimals).");
+            alert("The amount must be a number (limited to 2 decimals).");
             return;
         }
         if (!type) {
-            alert("Please choose income or expense.")
+            alert("Please select the transaction type.")
             return;
         }
         if (!reDate.test(date)) {
-            alert("Use date format YYYY-MM-DD.");
+            alert("Use the date format YYYY-MM-DD.");
             return;
         }
         if (reDupWord.test(descriptionRaw)) {
-            alert("Warning: duplicate word detected in description.");
+            alert("Alert! Duplicate words detected in description");
         }
 
         const description = descriptionRaw.trim().replace(/\s{2,}/g, " ");
         const amount = parseFloat(amountStr);
         const nowISO = new Date().toISOString()
+        if (editingId) {
+            // UPDATE existing record
+            const idx = records.findIndex(r => r.id === editingId);
+            if (idx !== -1) {
+                records[idx] = {
+                    ...records[idx],
+                    description,
+                    category,
+                    amount,
+                    type,
+                    date,
+                    updatedAt: nowISO
+                };
+                saveRecords(records);
+                applySearch();
+                announce("Record updated.");
+            }
+            editingId = null;   // exit edit mode
+            form.reset();
+            return;
+        }
+
+        // ADD new record
         const id = "rec_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-        const newRecord = { id, description, amount, type, date, createdAt: nowISO, updatedAt: nowISO };
+        const newRecord = { id, description, category, amount, type, date, createdAt: nowISO, updatedAt: nowISO };
 
         records.push(newRecord);
         saveRecords(records);
         form.reset();
-        renderRecords();
-        updateDashboard(records, settings);
+        applySearch();
         announce("REcord added.")
     });
 
@@ -255,7 +191,8 @@ document.addEventListener("DOMContentLoaded", () => {
 // ExportING FROM json
     if (exportBtn) {
         exportBtn.addEventListener("click", () => {
-            const blob = new Blob([JSON.stringify(records, null, 2)], { type: "application/json" });
+            const json = exportRecords();
+            const blob = new Blob([json], { type: "application/json"});
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url
@@ -278,45 +215,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const reader = new FileReader();
             reader.onload = (ev) => {
-                try {
-                    const text = String(ev.target.result || "");
-                    const data = JSON.parse(text);
-
-                    if (!Array.isArray(data)) {
-                        importErr.textContent = "Invalid file format.";
-                        return;
-                    }
-
-                    // Validate
-                    const valid = data.every(rec =>
-                        rec &&
-                        typeof rec.description === "string" &&
-                        typeof rec.amount === "number" &&
-                        (rec.type === "income" || rec.type === "expense") &&
-                        /^\d{4}-\d{2}-\d{2}$/.test(rec.date)
-                    );
-                    if (!valid) {
-                        importErr.textContent = "Some records are invalid.";
-                        return;
-                    }
-
-                    records = data;
-                    saveRecords(records);
-                    renderRecords()
-                    updateDashboard(records, settings);
-                    announce("Record imported successfully");
-                    importErr.textContent = "";
-                    alert("Records imported successfully!");
-                } catch {
-                    importErr.textContent = "Invalid or corrupted JSON file.";
+                const text = String(ev.target.result || "");
+                const {ok, data, error} = importFromJSON(text)
+                if (!ok) {
+                    importErr.textContent = error || "Invalid file";
+                    return;
                 }
-            };
-            reader.readAsText(file);
-        });
-    }
+                records = data;
+                saveRecords(records)
+                importErr.textContent = "";
+                applySearch();
+                announce("Record added.");
+                alert("Record added successfullly.");
+                };
 
-    renderRecords();
-    updateDashboard(records, settings)
+                reader.readAsText(file);
+            });
+        }
 
     const yearEl = document.getElementById("year");
     if (yearEl) yearEl.textContent = String(new Date().getFullYear());
