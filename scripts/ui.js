@@ -80,23 +80,29 @@ export function updateDashboard(records, settings) {
     const trendEl = document.getElementById("trend");
     if (trendEl) {
         trendEl.innerHTML = "";
+
+        //Addition for graphs to take input date type
+        const normYMD = (s) => String(s || "").trim().slice(0, 10);
+        const ymdFromDate = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate())
+            .toLocaleDateString("en-CA");
+
         const today = new Date();
         const Stats7Days = [];
         for (let i = 6; i >= 0; i--) {
             const d = new Date(today);
             d.setDate(today.getDate() - i);
-            const dayStr = d.toISOString().slice(0, 10); // format: YYYY-MM-DD
-            Stats7Days.push(dayStr);
+            Stats7Days.push(ymdFromDate(d));
         }
 
-        const dailyTotals = Stats7Days.map(day => {
-            let total = 0;
-            for (const r of expenses) {
-                if (r.date === day) total += Number(r.amount || 0);
+        const byDay = new Map(Stats7Days.map(d => [d, 0])); // init all 7 days to 0
+        for (const r of expenses) {
+            const key = normYMD(r.date);
+            if (byDay.has(key)) {
+                byDay.set(key, byDay.get(key) + Number(r.amount || 0));
             }
-            return { day, total };
-        });
+        }
 
+        const dailyTotals = Stats7Days.map(day => ({ day, total: byDay.get(day) || 0 }));
         const maxTotal = Math.max(1, ...dailyTotals.map(d => d.total));
 
         for (const item of dailyTotals) {
@@ -105,9 +111,11 @@ export function updateDashboard(records, settings) {
 
             const heightPercent = (item.total / maxTotal) * 100;
             bar.style.height = heightPercent + "%";
+            if (item.total === 0) bar.style.minHeight = "4px"; // visible sliver
 
-            bar.title = `${item.day}: ${fmtAmount(item.total, settings)}`;
-            bar.setAttribute("aria-label", `${item.day}: ${fmtAmount(item.total, settings)}`);
+            const tip = `${item.day}: ${fmtAmount(item.total, settings)}`;
+            bar.title = tip;
+            bar.setAttribute("aria-label", tip);
 
             trendEl.appendChild(bar);
         }
