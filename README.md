@@ -6,7 +6,7 @@ Built using **HTML 5**, **CSS 3**, and **JavaScript (ES6 Modules)** — no exter
 ---
 ## 🌐 Live Website
 🔗 [Live Demo on GitHub Pages](https://mitchellbarure.github.io/student_finance_tracker/)
-📁 [Repository](https://github.com/MitchellBarure/student-finance-tracker)
+📁 [Repository](https://github.com/MitchellBarure/student_finance_tracker)
 
 ---
 ## 🎯 Purpose
