@@ -38,5 +38,55 @@
     "date": "2025-01-10",
     "createdAt": "2025-01-10T09:00:00Z",
     "updatedAt": "2025-01-10T09:00:00Z"
+  },
+  {
+    "id": "rec5",
+    "description": "Textbook Purchase: Calculus",
+    "category": "Education",
+    "amount": 7500,
+    "type": "expense",
+    "date": "2025-01-12",
+    "createdAt": "2025-01-12T15:30:00Z",
+    "updatedAt": "2025-01-12T15:30:00Z"
+  },
+  {
+    "id": "rec6",
+    "description": "Dinner with Friends",
+    "category": "Food",
+    "amount": 4200,
+    "type": "expense",
+    "date": "2025-01-13",
+    "createdAt": "2025-01-13T19:45:00Z",
+    "updatedAt": "2025-01-13T19:45:00Z"
+  },
+  {
+    "id": "rec7",
+    "description": "Bus Fare",
+    "category": "Transport",
+    "amount": 800,
+    "type": "expense",
+    "date": "2025-01-14",
+    "createdAt": "2025-01-14T07:15:00Z",
+    "updatedAt": "2025-01-14T07:15:00Z"
+  },
+  {
+    "id": "rec8",
+    "description": "Part-Time Job Salary",
+    "category": "Income",
+    "amount": 45000,
+    "type": "income",
+    "date": "2025-01-15",
+    "createdAt": "2025-01-15T11:00:00Z",
+    "updatedAt": "2025-01-15T11:00:00Z"
+  },
+  {
+    "id": "rec9",
+    "description": "Monthly Phone Bill",
+    "category": "Utilities",
+    "amount": 3000,
+    "type": "expense",
+    "date": "2025-01-16",
+    "createdAt": "2025-01-16T14:00:00Z",
+    "updatedAt": "2025-01-16T14:00:00Z"
   }
 ]
