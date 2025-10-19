@@ -73,6 +73,9 @@
         <ul>
             <li><strong>Top Category:</strong> <span id="stat-top-category"></span></li>
             <li><strong>Average Expenses:</strong> <span id="stat-ave-expense"></span></li>
+            <li><strong>Total Records:</strong> <span id="stat-total-records"></span></li>
+            <li><strong>Last 7 Days:</strong>
+            <div id="trend" role="img" aria-label="Trend of expenses in the last 7 days"></div></li>
             <li><strong>Cap Status:</strong> <span id="stat-cap-status" role="status" aria-live="polite"></span></li>
         </ul>
     </div>
@@ -102,7 +105,7 @@
             <small id="cat-err" class="error" aria-live="polite"></small>
 
             <label for="amount">Amount:</label>
-            <input type="number"  id="amount" name="amount" placeholder="e.g. 3000RWF" required aria-describedby="amt-err"/>
+            <input type="number"  id="amount" name="amount" placeholder="e.g. 3000 (maximum of 2 decimals places, RWF" required aria-describedby="amt-err" step="0.01" min="0" inputmode="decimal"/>
             <small id="amt-err" class="error" aria-live="polite"></small>
 
             <label for="type">Type</label>           <!--Allows logic needed for dashboard, summary of finances-->
@@ -151,10 +154,10 @@
             <caption class="sr-only">Arrange columns and delete your financial records!</caption>
             <thead>
             <tr>
-                <th scope="col">Description</th>
-                <th scope="col">Amount</th>
-                <th scope="col">Type</th>
-                <th scope="col">Date</th>
+                <th scope="col" data-sortkey="description" tabindex="0" role="button" aria-label="Sort by Description" aria-sort="none">Description</th>
+                <th scope="col" data-sortkey="amount" tabindex="0" role="button" aria-label="Sort by amount" aria-sort="none">Amount</th>
+                <th scope="col" >Type</th>
+                <th scope="col" data-sortkey="date" tabindex="0" role="button" aria-label="Sort by the date" aria-sort="descending">Date</th>
                 <th scope="col">Action</th>
             </tr>
             </thead>

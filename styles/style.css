@@ -189,6 +189,8 @@ th, td {
     border-bottom: 1px solid var(--bg-light);
 }
 
+thead th[data-sortkey] { cursor: pointer; }
+
 /* Style the dashboard */
 #dashboard {
     display: flex;
@@ -239,6 +241,23 @@ th, td {
     padding: 12px 14px;
 }
 
+#trend {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    min-height: 72px;
+    margin-top: 6px;
+}
+#trend .bar {
+    width: 16px;
+    background: var(--primary-color);
+    border-radius: 6px 6px 0 0;
+    box-shadow: var(--shadow-light);
+    transition: transform .15s;
+}
+#trend .bar:hover { transform: translateY(-2px); }
+
+
 
 /*sIMPLE FOOTER STYLING */
 footer {
@@ -256,6 +275,12 @@ footer {
     color: #b00020;
     font-size: 0.9rem;
     min-height: 1.1em;
+}
+
+/*Styling to indicate invalid inputs*/
+[aria-invalid="true"] {
+    border-color: #b00020;
+    box-shadow: 0 0 0 2px rgba(176, 0, 32, 0.12);
 }
 
 /* mAKE THE PAGE RESPONSIVE */

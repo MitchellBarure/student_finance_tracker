@@ -2,6 +2,7 @@
   {
     "id": "rec1",
     "description": "Allowance from Parents",
+    "category": "Income",
     "amount": 50000,
     "type": "income",
     "date": "2025-01-05",
@@ -11,6 +12,7 @@
   {
     "id": "rec2",
     "description": "Lunch at Campus",
+    "category": "Food",
     "amount": 3500,
     "type": "expense",
     "date": "2025-01-06",
@@ -20,6 +22,7 @@
   {
     "id": "rec3",
     "description": "Transport to School",
+    "category": "Transport",
     "amount": 1500,
     "type": "expense",
     "date": "2025-01-07",
@@ -29,6 +32,7 @@
   {
     "id": "rec4",
     "description": "Freelance Design Payment",
+    "category": "Income",
     "amount": 20000,
     "type": "income",
     "date": "2025-01-10",

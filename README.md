@@ -1,249 +1,156 @@
-Student Finance Tracker
+# 💰 Student Finance Tracker
 
-Accessible, responsive, vanilla HTML/CSS/JS app to track student income & expenses with live regex search, sorting, localStorage persistence, and JSON import/export. Built for the ALU “Building Responsive UI” summative.
+A simple, accessible, and responsive **web application** that helps students manage their income, expenses, and savings.  
+Built using **HTML 5**, **CSS 3**, and **JavaScript (ES6 Modules)** — no external frameworks required.
 
-Author: Mitchell Barure · GitHub
-· m.barure@alustudent.com
+---
+## 🌐 Live Website
+🔗 [Live Demo on GitHub Pages](https://mitchellbarure.github.io/student-finance-tracker/)
+📁 [Repository](https://github.com/MitchellBarure/student-finance-tracker)
 
-Live Demo: Add your GitHub Pages URL here
+---
+## 🎯 Purpose
 
-✨ Features
+The goal of this project is to help students:
+- Record and track income & expenses easily.
+- View summaries and visual insights.
+- Maintain awareness of their financial health through dashboards, caps, and trends.
 
-Add/Delete records (id, description, amount, type, date, timestamps)
+---
 
-Dashboard: Total Income, Total Expenses, Balance
+## 🧠 Features
 
-Insights: Top Expense, Average Expense, Budget Cap Status
+### 1. Add / Edit / Delete Financial Records
+- Input **description**, **category**, **amount**, **type** (income / expense), and **date**.
+- Inline validation using **regex patterns** for data accuracy.
+- Accessible error messages (`aria-live`, `aria-invalid`).
 
-Regex live search (with case-insensitive toggle) + safe compile + <mark> highlighting
+### 2. Dashboard & Statistics
+- Auto-calculates **total income**, **total expense**, and **balance**.
+- Displays:
+    - **Top expense category**
+    - **Average expense amount**
+    - **Total number of records**
+- Budget Cap indicator shows how much remains or if the cap is exceeded.
 
-Sorting on Description, Amount, Type, Date (A↕Z / ↑↓)
+### 3. Expense Trend Chart
+- Shows a **7-day bar chart** of expenses (generated dynamically with JavaScript).
 
-Persistence via localStorage
+### 4. Sortable & Searchable Records
+- Click column headers to **sort** by description, amount, or date.
+- Use **regular expressions (regex)** to search descriptions or categories dynamically.
 
-Settings: Monthly budget cap, currency display (RWF/USD/EUR) + manual rates
+### 5. Import / Export Data
+- Export your records as a JSON file.
+- Import records from a JSON file (with validation).
 
-Import/Export JSON with validation
+### 6. Persistent Settings
+- Data and preferences are saved using **localStorage** (no backend required).
+- Settings include:
+    - Monthly **cap limit**
+    - Currency display (RWF / USD / EUR)
+    - Custom exchange rates
 
-A11y: Skip link, live regions, keyboardable sorting (Enter/Space), visible focus, table caption
+### 7. Accessibility & Usability
+- Skip-to-main link and ARIA roles.
+- Keyboard-friendly sorting and navigation.
+- Live region announcements for updates.
 
-Responsive (mobile-first; tablet/desktop breakpoints)
+---
+## 🔍 Regex Catalog
 
-🗂 Project Structure
-.
+| Pattern | Purpose | Example Match |
+|----------|----------|----------------|
+| `/^\S(?:.*\S)?$/` | Description – prevents leading/trailing spaces | `"Lunch at Cafe"` ✅ `"  Dinner"` ❌ |
+| `/^(0|[1-9]\d*)(\.\d{1,2})?$/` | Amount – allows numbers with up to 2 decimals | `120`, `35.50` ✅ `12.345` ❌ |
+| `/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/` | Date – ensures valid YYYY-MM-DD format | `2025-10-19` ✅ |
+| `/\b(\w+)\s+\1\b/i` | Detects duplicate words | `"very very good"` ✅ `"very good"` ❌ |
+| `/^[A-Za-z]+(?:[ -][A-Za-z]+)*$/` | Category – alphabetic, supports spaces/hyphens | `"Food & Drinks"` ✅ `"123Food"` ❌ |
+
+___
+## ⚙️ Technology Stack
+
+| Component | Technology Used |
+|------------|-----------------|
+| **Frontend** | HTML 5, CSS 3, JavaScript (ES6 Modules) |
+| **Storage** | Browser `localStorage` |
+| **Validation** | Regular Expressions |
+| **Chart** | Pure CSS bars generated dynamically |
+| **Accessibility** | ARIA live regions, roles, keyboard navigation |
+
+---
+
+## 🧩 Project Structure
+
+student-finance-tracker/
+│
 ├── index.html
 ├── styles/
-│   └── style.css
+│ └── style.css
 ├── scripts/
-│   ├── main.js          # orchestrates DOM/events/rendering
-│   ├── storage.js       # load/save records & settings (localStorage + seed.json)
-│   ├── validators.js    # regex rules for form validation
-│   ├── search.js        # safe regex compile + escape + highlight
-│   ├── ui.js            # totals + insights (top/avg/cap) + formatting
-│   └── seed.json        # starter data (loaded on first run if no local data)
-└── README.md
-
-🚀 Run & Deploy
-Run locally
-
-fetch("./scripts/seed.json") requires serving over HTTP (not file://).
-
-VS Code Live Server (recommended), or
-
-Python:
-
-python3 -m http.server
-# open http://localhost:8000
-
-Deploy to GitHub Pages
-
-Push to GitHub.
-
-Repo Settings → Pages → Source: Deploy from a branch, Branch: main (root).
-
-Save and open the Pages URL.
-
-Put that URL at the top of this README.
-
-Any future commit to the configured branch auto-updates the live site.
-
-🧩 Data Model
-
-Each record contains a unique id and timestamps:
-
-{
-"id": "rec_abc123",
-"description": "Lunch at Campus",
-"amount": 3500,
-"type": "expense",      // "income" | "expense"
-"date": "2025-01-06",   // YYYY-MM-DD
-"createdAt": "ISO",
-"updatedAt": "ISO"
-}
-
-
-Storage: localStorage key sft:records
-
-Settings: localStorage key sft:settings
-
-{
-"cap": 0,
-"rates": { "USD": 0, "EUR": 0 },
-"display": "RWF"
-}
-
-🌱 Seed Data
-
-File: scripts/seed.json
-
-Loaded automatically only if there’s no saved data yet:
-
-storage.js → loadRecords() fetches seed.json, persists it to localStorage, and returns it.
-
-If you open directly with file://, fetch may fail. Use a local server (see “Run locally”).
-
-📥 Import / Export
-
-Export: “Export JSON” → downloads student_finance_records.json
-
-Import: “Import JSON” → validates and loads array data
-Minimal validation checks:
-
-description (string), amount (number),
-
-type (“income” | “expense”),
-
-date matches YYYY-MM-DD
-
-✅ Form Validation (Regex)
-
-Defined in scripts/validators.js:
-
-No leading/trailing spaces
-^\S(?:.*\S)?$
-
-Amount (0 or integer/decimal up to 2 dp)
-^(0|[1-9]\d*)(\.\d{1,2})?$
-
-Date (YYYY-MM-DD)
-^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$
-
-Advanced (duplicate word back-ref)
-\b(\w+)\s+\1\b → warns if found in description
-
-🔎 Regex Search
-
-Live input compiles with a safe compiler (search.js: compileRegex()); invalid patterns show an assertive error message.
-
-Case-insensitive toggle via checkbox.
-
-Matches are highlighted using <mark> without breaking accessibility.
-
-Examples to try:
-
-Cents present: /\.\d{2}\b/
-
-Beverage keywords: /(coffee|tea)/i
-
-Duplicate word: /\b(\w+)\s+\1\b/
-
-Dates in Jan 2025: /^2025-01/
-
-📊 Dashboard & Insights
-
-Totals: Income, Expenses, Balance (formatted with fmtAmount)
-
-Insights:
-
-Top Expense (max of expenses)
-
-Average Expense (mean of expenses)
-
-Cap Status (remaining vs exceeded)
-
-Budget Cap and Currency settings stored in sft:settings.
-
-♿ Accessibility
-
-Landmarks: header, nav, main, section, footer
-
-Skip link: “Skip to main content”
-
-Live regions:
-
-#status (polite) for actions like add/delete/import/export
-
-#sft-search-error (assertive) for invalid regex
-
-#cap-status (polite) for cap updates
-
-Table caption (sr-only) describes sortable records table
-
-Visible focus (:focus-visible)
-
-Sortable headers announced; keyboard activation via Enter/Space
-
-⌨️ Keyboard Map
-
-Skip to content: Tab (first focus) → Enter
-
-Navigate form & buttons: Tab / Shift+Tab; Enter to activate
-
-Sort columns: Focus header → Enter/Space
-
-Delete row: Tab to the row’s “Delete” → Enter
-
-Regex search: Type in the search input; toggle case insensitive
-
-🧪 Quick Test Snippet (optional)
-
-Create a tests.html (optional) and add:
-
-<script type="module">
-  import { validators } from './scripts/validators.js';
-  console.assert(validators.reAmount.test("12.50"), "Amount regex failed");
-  console.assert(validators.reDate.test("2025-01-06"), "Date regex failed");
-  console.log("Basic validator tests passed");
-</script>
-
-🎥 Demo Video (2–3 min)
-
-Show (keyboard-first where possible):
-
-Add income & expense (show validation), totals update
-
-Sort by Date → Amount → Description
-
-Regex search: (coffee|tea), then a broken pattern (see assertive error)
-
-Settings: set cap + USD/EUR rates; see Cap Status update
-
-Export JSON → Import the same file
-
-Keyboard navigation (skip link, sorting with Enter/Space, delete)
-
-Upload unlisted (YouTube/Drive) and paste the link here.
-
-📎 Notes / Limitations
-
-seed.json requires serving via HTTP (local server or GitHub Pages).
-
-Currency display/rates are stored for settings; totals currently shown in RWF (extend easily to convert displayed totals using settings.display & rates).
-
-🔒 Academic Integrity
-
-UI/logic authored for this assignment. Any adapted accessibility patterns are cited in code comments where applicable.
-
-✅ Submission Checklist
-
-Public GitHub repo link
-
-GitHub Pages live link in this README
-
-seed.json present and loads on first run
-
-README includes features, regex catalog, keyboard map, a11y notes
-
-Demo video link (unlisted)
-
-App runs with local server and on GitHub Pages
+│ ├── main.js
+│ ├── ui.js
+│ ├── storage.js
+│ ├── search.js
+│ └── validators.js
+└── seed.json
+
+yaml
+Copy code
+
+---
+
+## 🚀 How to Run
+
+1. Download or clone this repository.
+2. Open `index.html` in your browser.
+3. The seed data loads automatically the first time.
+4. Add, edit, or delete records freely — everything is saved locally.
+
+---
+
+## 🧰 Testing Guide
+
+| Task | Expected Behavior |
+|------|--------------------|
+| Add record | Appears immediately in table & updates dashboard |
+| Edit record | Fields pre-fill, updates on save |
+| Delete record | Prompts confirmation, removes row |
+| Sort headers | Click once for ascending, twice for descending |
+| Regex search | Filters table live (e.g. `^T` shows “Transport”) |
+| Export JSON | Downloads validated file |
+| Import JSON | Replaces existing data after confirmation |
+| Change cap | Updates cap status message |
+| Change currency | Recalculates dashboard amounts instantly |
+
+---
+
+## ⌨️ Keyboard Map
+
+| Key | Action |
+|-----|---------|
+| `Tab` / `Shift + Tab` | Navigate through buttons and input fields |
+| `Enter` | Submit form / Confirm dialog |
+| `Space` | Toggle sort order when focused on column header |
+| `Esc` | Cancel editing or close dialogs |
+
+___
+
+## 📈 Accessibility / A11y Features
+- Live status messages with `aria-live="polite"` / `assertive`
+- Keyboard-accessible sort headers
+- Semantic HTML structure (landmarks: `header`, `main`, `section`)
+- Descriptive labels for inputs and buttons
+
+---
+
+## 👨‍💻 Author
+**Mitchell Barure**  
+Software Engineering Student — African Leadership University  
+📧 [m.barure@alustudent.com](mailto:m.barure@alustudent.com)  
+🌐 [GitHub Profile](https://github.com/MitchellBarure)
+
+---
+
+## 🪪 License
+This project is open-source and free for educational use.

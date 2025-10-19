@@ -65,7 +65,7 @@ export function exportRecords() {
         const data = saved ? validateRecords(JSON.parse(saved)) : [];
         return JSON.stringify(data, null, 2);
     } catch {
-        return "[]:";
+        return [];
     }
 }
 

@@ -5,7 +5,7 @@ import {compileRegex} from "./validators.js";
 export function buildSearchRegex(query, caseInsensitive =true) {
     const q = String(query || "").trim();
     if (!q) return null;
-    const flags = caseInsensitive ? "ig" : "g";
+    const flags = caseInsensitive ? "i" : "";
     return compileRegex(q, flags);
 }
 
